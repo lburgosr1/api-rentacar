@@ -1,23 +1,22 @@
 const { response } = require('express');
 
-const Customer = require('../models/customer.model');
+const Document = require('../models/document.model');
 
-const getCustomers = async (req, res) => {
+const getDocuments = async (req, res) => {
 
     const page = Number(req.query.page) || 1;
     const count = Number(req.query.count) || 5;
     const term = req.query.term || '';
-    const status = req.query.status || true;
     const regex = new RegExp(term, 'i');
+    const status = req.query.status || true;
 
+    console.log("STATUS: ",status)
     //Colleccion de promesa
-    const [customers, total] = await Promise.all([
-        Customer
+    const [documents, total] = await Promise.all([
+        Document
             .find({
                 $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { phone: regex }
+                    { typeDocument: regex },
                 ],
                 $and: [
                     { status: status }
@@ -25,14 +24,12 @@ const getCustomers = async (req, res) => {
             })
             .skip(count * (page - 1))
             .limit(count)
-            .sort({ 'firstName': 1 }),
+            .sort({ 'typeDocument': 1 }),
 
-        Customer
+        Document
             .find({
                 $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { phone: regex }
+                    { typeDocument: regex }
                 ],
                 $and: [
                     { status: status }
@@ -45,38 +42,40 @@ const getCustomers = async (req, res) => {
 
     res.json({
         ok: true,
-        customers,
+        documents,
         total
     });
+
 }
 
-const getAllCustomers = async (req, res) => {
-
+const getAllDocuments = async (req, res) => {
     //Colleccion de promesa
-    const customers = await Customer
+    const documents = await Document
             .find({
                 $and: [
                     { status: true }
                 ]
             })
-            .sort({ 'firstName': 1 });
-            
+            .sort({ 'typeDocument': 1 })
+
+
     res.json({
         ok: true,
-        customers
+        documents
     });
+
 }
 
-const getCustomerById = async (req, res) => {
+const getDocumentById = async (req, res) => {
 
     const id = req.params.id;
 
     try {
-        const customer = await Customer.findById(id);
+        const document = await Document.findById(id);
 
         res.json({
             ok: true,
-            customer
+            document
         })
 
     } catch (error) {
@@ -88,32 +87,17 @@ const getCustomerById = async (req, res) => {
     }
 }
 
-const createCustomer = async (req, res = response) => {
-
-    let customer;
-
-    customer = new Customer({
-        ...req.body
-    });
-
-    const document = customer.document;
+const createDocument = async (req, res = response) => {
+    
+    const document =  new Document(req.body);
 
     try {
 
-        const documentExists = await Customer.findOne({ document });
-
-        if (documentExists) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Ya existe una cedula registrada'
-            });
-        }
-
-        const customerDB = await customer.save();
+        await document.save();
 
         res.json({
             ok: true,
-            customer: customerDB
+            document: document
         });
 
 
@@ -126,27 +110,27 @@ const createCustomer = async (req, res = response) => {
     }
 }
 
-const updateCustomer = async (req, res = response) => {
+const updateDocument = async (req, res = response) => {
 
-    const customerId = req.params.id;
+    const documentId = req.params.id;
 
     try {
 
-        const customerDB = await Customer.findById(customerId);
+        const documentDB = await Document.findById(documentId);
 
-        if (!customerDB) {
+        if (!documentDB) {
             return res.status(404).json({
                 ok: false,
-                msg: 'Cliente no existe'
+                msg: 'Document no existe'
             });
         }
 
-        await Customer.findByIdAndUpdate(customerId, req.body);
-        const customerUpdate = await Customer.findById(customerId);
+        await Document.findByIdAndUpdate(documentId, req.body);
+        const documentUpdate = await Document.findById(documentId);
 
         res.json({
             ok: true,
-            customer: customerUpdate
+            document: documentUpdate
         });
 
     } catch (error) {
@@ -158,23 +142,23 @@ const updateCustomer = async (req, res = response) => {
     }
 }
 
-const deleteCustomer = async (req, res = response) => {
+const deleteDocument = async (req, res = response) => {
 
-    const customerId = req.params.id
-
+    const documentId = req.params.id
+    
     try {
-        const customerDB = await Customer.findById(customerId);
+        const documentDB = await Document.findById(documentId);
 
-        if (!customerDB) {
+        if (!documentDB) {
             return res.status(404).json({
                 ok: false,
-                msg: 'Cliente no existe'
+                msg: 'Moneda no existe'
             });
         }
 
-        const customer = req.body;
+        const document = req.body;
 
-        await Customer.findByIdAndUpdate(customerId, customer);
+        await Document.findByIdAndUpdate(documentId, document);
         res.json({
             ok: true,
             msg: 'Estatus actualizado'
@@ -190,10 +174,10 @@ const deleteCustomer = async (req, res = response) => {
 }
 
 module.exports = {
-    getCustomers,
-    createCustomer,
-    updateCustomer,
-    deleteCustomer,
-    getCustomerById,
-    getAllCustomers
+    getDocuments,
+    createDocument,
+    updateDocument,
+    deleteDocument,
+    getDocumentById,
+    getAllDocuments
 }

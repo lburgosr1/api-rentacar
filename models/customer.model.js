@@ -1,7 +1,4 @@
 const { Schema, model } = require('mongoose');
-const Address = require('./address.model');
-const Contact = require('./contact.model');
-const Email = require('./email.model');
 
 const CustomerSchema = Schema({
     firstName: {
@@ -21,17 +18,25 @@ const CustomerSchema = Schema({
         type: String,
         required: true
     },
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User'
+    address: {
+        type: String,
+        required: true
     },
-    addresses: {type: [Address.schema]},
-    contacts: {
-        type: [{
-            contacts: { type: [Contact.schema] },
-            emails: { type: [Email.schema] }
-        }]
+    phone: {
+        type: String,
+        required: true,
+        unique: true
     },
+    email: {
+        type: String,
+        required: false,
+        unique: true,
+    },
+    status: {
+        type: Boolean,
+        require: false,
+        default: true
+    }
 });
 
 CustomerSchema.method('toJSON', function() {

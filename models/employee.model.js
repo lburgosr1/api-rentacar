@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const UserSchema = Schema({
+const EmployeeSchema = Schema({
     firstName: {
         type: String,
         required: true
@@ -9,22 +9,23 @@ const UserSchema = Schema({
         type: String,
         required: true
     },
-    userName: {
+    document: {
         type: String,
-        required: true,
-        unique: true
+        unique: true,
+        required: true
     },
-    password: {
+    typeDocument: {
         type: String,
         required: true
     },
-    image: {
-        type: String
-    },
-    role: {
+    address: {
         type: String,
-        required: false,
-        default: 'USER_ROLE'
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true,
+        unique: true,
     },
     status: {
         type: Boolean,
@@ -33,10 +34,10 @@ const UserSchema = Schema({
     }
 });
 
-UserSchema.method('toJSON', function() {
-    const { _v, _id, password, ...object } = this.toObject();
-    object.user_id = _id;
+EmployeeSchema.method('toJSON', function() {
+    const { _v, _id, ...object } = this.toObject();
+    object.employee_id = _id;
     return object; 
 });
 
-module.exports = model('User', UserSchema);
+module.exports = model('Employee', EmployeeSchema);

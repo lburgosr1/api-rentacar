@@ -1,5 +1,5 @@
 {
-  "name": "api-laundry",
+  "name": "api-rentacar",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -22,6 +22,7 @@
     "moment": "^2.29.4",
     "mongoose": "^6.8.4",
     "node-cron": "^3.0.2",
+    "puppeteer": "^22.6.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

@@ -1,23 +1,21 @@
 const { response } = require('express');
 
-const Customer = require('../models/customer.model');
+const Coin = require('../models/coin.model');
 
-const getCustomers = async (req, res) => {
+const getCoins = async (req, res) => {
 
     const page = Number(req.query.page) || 1;
     const count = Number(req.query.count) || 5;
     const term = req.query.term || '';
-    const status = req.query.status || true;
     const regex = new RegExp(term, 'i');
+    const status = req.query.status || true;
 
     //Colleccion de promesa
-    const [customers, total] = await Promise.all([
-        Customer
+    const [coins, total] = await Promise.all([
+        Coin
             .find({
                 $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { phone: regex }
+                    { coinName: regex },
                 ],
                 $and: [
                     { status: status }
@@ -25,14 +23,12 @@ const getCustomers = async (req, res) => {
             })
             .skip(count * (page - 1))
             .limit(count)
-            .sort({ 'firstName': 1 }),
+            .sort({ 'coinName': 1 }),
 
-        Customer
+        Coin
             .find({
                 $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { phone: regex }
+                    { coinName: regex }
                 ],
                 $and: [
                     { status: status }
@@ -45,38 +41,41 @@ const getCustomers = async (req, res) => {
 
     res.json({
         ok: true,
-        customers,
+        coins,
         total
     });
+
 }
 
-const getAllCustomers = async (req, res) => {
+const getAllCoins = async (req, res) => {
 
     //Colleccion de promesa
-    const customers = await Customer
+    const coins = await Coin
             .find({
                 $and: [
                     { status: true }
                 ]
             })
-            .sort({ 'firstName': 1 });
-            
+            .sort({ 'coinName': 1 });
+
+
     res.json({
         ok: true,
-        customers
+        coins
     });
+
 }
 
-const getCustomerById = async (req, res) => {
+const getCoinById = async (req, res) => {
 
     const id = req.params.id;
 
     try {
-        const customer = await Customer.findById(id);
+        const coin = await coin.findById(id);
 
         res.json({
             ok: true,
-            customer
+            coin
         })
 
     } catch (error) {
@@ -88,32 +87,17 @@ const getCustomerById = async (req, res) => {
     }
 }
 
-const createCustomer = async (req, res = response) => {
-
-    let customer;
-
-    customer = new Customer({
-        ...req.body
-    });
-
-    const document = customer.document;
+const createCoin = async (req, res = response) => {
+    
+    const coin =  new Coin(req.body);
 
     try {
 
-        const documentExists = await Customer.findOne({ document });
-
-        if (documentExists) {
-            return res.status(400).json({
-                ok: false,
-                msg: 'Ya existe una cedula registrada'
-            });
-        }
-
-        const customerDB = await customer.save();
+        await coin.save();
 
         res.json({
             ok: true,
-            customer: customerDB
+            coin: coin
         });
 
 
@@ -126,27 +110,27 @@ const createCustomer = async (req, res = response) => {
     }
 }
 
-const updateCustomer = async (req, res = response) => {
+const updateCoin = async (req, res = response) => {
 
-    const customerId = req.params.id;
+    const coinId = req.params.id;
 
     try {
 
-        const customerDB = await Customer.findById(customerId);
+        const coinDB = await Coin.findById(coinId);
 
-        if (!customerDB) {
+        if (!coinDB) {
             return res.status(404).json({
                 ok: false,
-                msg: 'Cliente no existe'
+                msg: 'Coin no existe'
             });
         }
 
-        await Customer.findByIdAndUpdate(customerId, req.body);
-        const customerUpdate = await Customer.findById(customerId);
+        await Coin.findByIdAndUpdate(coinId, req.body);
+        const coinUpdate = await Coin.findById(coinId);
 
         res.json({
             ok: true,
-            customer: customerUpdate
+            coin: coinUpdate
         });
 
     } catch (error) {
@@ -158,23 +142,23 @@ const updateCustomer = async (req, res = response) => {
     }
 }
 
-const deleteCustomer = async (req, res = response) => {
+const deleteCoin = async (req, res = response) => {
 
-    const customerId = req.params.id
-
+    const coinId = req.params.id
+    
     try {
-        const customerDB = await Customer.findById(customerId);
+        const coinDB = await Coin.findById(coinId);
 
-        if (!customerDB) {
+        if (!coinDB) {
             return res.status(404).json({
                 ok: false,
-                msg: 'Cliente no existe'
+                msg: 'Moneda no existe'
             });
         }
 
-        const customer = req.body;
+        const coin = req.body;
 
-        await Customer.findByIdAndUpdate(customerId, customer);
+        await Coin.findByIdAndUpdate(coinId, coin);
         res.json({
             ok: true,
             msg: 'Estatus actualizado'
@@ -190,10 +174,10 @@ const deleteCustomer = async (req, res = response) => {
 }
 
 module.exports = {
-    getCustomers,
-    createCustomer,
-    updateCustomer,
-    deleteCustomer,
-    getCustomerById,
-    getAllCustomers
+    getCoins,
+    createCoin,
+    updateCoin,
+    deleteCoin,
+    getCoinById,
+    getAllCoins
 }

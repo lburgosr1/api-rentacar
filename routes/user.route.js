@@ -17,7 +17,7 @@ router.post('/',
         check('firstName', 'The first name is require').not().isEmpty(),
         check('lastName', 'The last name is require').not().isEmpty(),
         check('password', 'The password is require').not().isEmpty(),
-        check('email', 'The email is require').isEmail(),
+        check('userName', 'The user name is require').not().isEmpty(),
         validateField
     ],
     createUser
@@ -29,8 +29,7 @@ router.put('/:id',
         validateAdminRoleOrSameUser,
         check('firstName', 'The first name is require').not().isEmpty(),
         check('lastName', 'The last name is require').not().isEmpty(),
-        check('role', 'The role is require').not().isEmpty(),
-        check('email', 'The email is require').isEmail(),
+        check('userName', 'The userName is require').not().isEmpty(),
         validateField
     ],
     updateUser

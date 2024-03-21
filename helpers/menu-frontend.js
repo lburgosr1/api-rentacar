@@ -1,12 +1,18 @@
 const URL = {
-    empty: '/',
-    users: 'users',
+    dashboard: 'dashboard',
     customers: 'customers',
-    employes: 'employes',
-    transactions: 'transactions',
-    inventory: 'inventory',
-    services: 'services',
-    reports: 'reports'
+    administration: 'administration',
+    vehicles: 'vehicles',
+    rentACar: 'rent-a-car',
+    reports: 'reports',
+    users: 'users',
+    coins: 'coins',
+    configuration: 'configuration',
+    documents: 'documents',
+    employees: 'employees',
+    brand: 'brand-vehicles',
+    typevehicle: 'type-vehicles',
+    vehicleModels: 'vehicle-models',
 }
 
 const getMenuFrontEnd = (role = 'USER_ROLE') => {
@@ -15,7 +21,15 @@ const getMenuFrontEnd = (role = 'USER_ROLE') => {
         {
             title: 'Dashboard',
             icon: 'mdi mdi-gauge',
-            url: URL.empty
+            url: URL.dashboard
+        },
+        {
+            title: 'Administración',
+            icon: 'fa fa-folder',
+            submenu: [
+                { title: 'Monedas', icon: 'fa fa-usd', url: URL.coins },
+                { title: 'Documentos', icon: 'fa fa-id-card', url: URL.documents}
+            ]
         },
         {
             title: 'Clientes',
@@ -23,34 +37,39 @@ const getMenuFrontEnd = (role = 'USER_ROLE') => {
             url: URL.customers
         },
         {
-            title: 'Empleados',
-            icon: 'fa fa-user',
-            url: URL.employes
+            title: 'Vehículo',
+            icon: 'fa fa-car',
+            submenu: [
+                { title: 'Tipos', icon: 'fa fa-folder', url: URL.typevehicle},
+                { title: 'Marcas', icon: 'fa fa-folder', url: URL.brand },
+                { title: 'Modelos', icon: 'fa fa-folder', url: URL.vehicleModels},
+                { title: 'Vehiculos', icon: 'fa fa-car', url: URL.vehicles},
+            ]
         },
         {
-            title: 'Transacciones',
-            icon: 'fa fa-usd',
-            url: URL.transactions
-        },
-        {
-            title: 'Inventario',
-            icon: 'fa fa-list',
-            url: URL.inventory
-        },
-        {
-            title: 'Servicios',
-            icon: 'fa fa-certificate',
-            url: URL.services
-        },
-        {
-            title: 'Reportes',
-            icon: 'fa fa-book',
-            url: URL.reports
+            title: 'Renta De Vehículo',
+            icon: 'fa fa-file-text',
+            url: URL.rentACar
         },
     ];
 
     if (role === 'ADMIN_ROLE') {
-        menu.push({ title: 'Usuarios', icon: 'fa fa-user', url: URL.users });
+        menu[1].submenu.unshift(
+            { title: 'Usuarios', icon: 'fa fa-user', url: URL.users },
+            { title: 'Configuración', icon: 'fa fa-university', url: URL.configuration },
+        );
+        menu.push(
+            {
+                title: 'Empleados',
+                icon: 'fa fa-building',
+                url: URL.employees
+            },
+            {
+                title: 'Reportes',
+                icon: 'fa fa-book',
+                url: URL.reports
+            }
+        )
     }
 
     return menu;

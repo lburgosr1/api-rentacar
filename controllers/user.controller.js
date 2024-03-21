@@ -13,26 +13,16 @@ const getUsers = async (req, res) => {
 
     const [users, total] = await Promise.all([
         User
-            .find({
-                $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { email: regex }
-                ]
-            }, 'firstName lastName email role google')
-            .skip(page)
+            .find()
+            .skip(count * (page - 1))
             .limit(count),
 
         User
-            .find({
-                $or: [
-                    { firstName: regex },
-                    { lastName: regex },
-                    { email: regex }
-                ]
-            })
+            .find()
             .count()
     ]);
+
+    console.log('USERS: ', users)
 
     res.json({
         ok: true,
@@ -43,15 +33,15 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res = response) => {
 
-    const { email, password } = req.body;
+    const { userName, password } = req.body;
 
     try {
-        const emailExists = await User.findOne({ email });
+        const userNameExists = await User.findOne({ userName });
 
-        if (emailExists) {
+        if (userNameExists) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El correo ya existe'
+                msg: 'El usuario ya existe'
             });
         }
         const user = new User(req.body);
@@ -75,7 +65,7 @@ const createUser = async (req, res = response) => {
         console.log(error);
         res.status(500).json({
             ok: false,
-            msg: 'Error inesperado. Hable con el administrador'
+            msg: 'Error inesperado. Contacte el administrador'
         });
     }
 }
@@ -95,31 +85,7 @@ const updateUser = async (req, res = response) => {
             });
         }
 
-        //Excluir el email, password y google de la data
-        const { password, google, email, ...field } = req.body;
-
-        if (userDB.email !== email) {
-
-            const existEmail = await User.findOne({ email });
-
-            if (existEmail) {
-                return res.status(404).json({
-                    ok: false,
-                    msg: 'El correo ya existe'
-                });
-            }
-        }
-
-        if (!userDB.google) {
-            field.email = email;
-        } else if (userDB.email !== email) {
-            res.status(400).json({
-                ok: false,
-                msg: 'Usuario de google no se permite actualizar correo'
-            });
-        }
-
-        const userUpdate = await User.findByIdAndUpdate(userId, field, { new: true });
+        const userUpdate = await User.findByIdAndUpdate(userId, req.body);
 
         res.json({
             ok: true,
@@ -130,7 +96,7 @@ const updateUser = async (req, res = response) => {
         console.log(error);
         res.status(500).json({
             ok: false,
-            msg: 'Error inesperado. Hable con el administrador'
+            msg: 'Error inesperado. Contacte el administrador'
         });
     }
 }
@@ -150,17 +116,20 @@ const deleteUser = async (req, res = response) => {
             });
         }
 
-        await User.findByIdAndDelete(userId);
+        //Excluir el userName, password de la data
+        const { password, userName, ...field } = req.body;
+
+        await User.findByIdAndUpdate(userId, field);
         res.json({
             ok: true,
-            msg: 'Usuario eliminado'
+            msg: 'Estatus actualizado'
         });
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
             ok: false,
-            msg: 'Error inesperado. Hable con el administrador'
+            msg: 'Error inesperado. Contacte el administrador'
         });
     }
 }

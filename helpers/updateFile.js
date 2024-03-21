@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const Customer = require('../models/customer.model');
+const Vehicle = require('../models/vehicle.model');
 const UserModel = require('../models/user.model');
 
 const deleteFile = (path) => {
@@ -17,21 +17,20 @@ const updateFile = async (type, id, fileName) => {
     let pathOld = '';
 
     switch(type) {
-        case 'customers':
-            const customer = await Customer.findById(id);
-            if(!customer) {
-                console.log('No se encontro el cliente');
+        case 'vehicles':
+            const vehicle = await Vehicle.findById(id);
+            if(!vehicle) {
+                console.log('No se encontro el vehiculo');
                 return false
             }
 
-            pathOld = `./upload/customers/${ customer.file}`;
+            pathOld = `./upload/vehicles/${ vehicle.image}`;
             deleteFile(pathOld);
 
-            customer.file = fileName;
-            await customer.save();
+            vehicle.image = fileName;
+            await vehicle.save();
             return true;
-
-        break;
+            
         case 'users':
             const user = await UserModel.findById(id);
             if(!user) {
@@ -45,7 +44,6 @@ const updateFile = async (type, id, fileName) => {
             user.image = fileName;
             await user.save();
             return true;
-        break;
     }
 
 }

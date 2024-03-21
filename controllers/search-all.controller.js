@@ -1,21 +1,7 @@
 const { response } = require('express');
 const Customer = require('../models/customer.model');
-const User = require('../models/user.model');
-
-const getSearchAll = async (req, res = response) => {
-
-    const term = req.params.term;
-    const regex = new RegExp(term, 'i');
-
-    const [customers] = await Promise.all([
-        Customer.find({ firstName: regex }),
-    ])
-
-    res.json({
-        ok: true,
-        customers
-    });
-}
+const Document = require('../models/document.model');
+const Vehicle = require('../models/vehicle.model');
 
 const getDocumentColection = async (req, res = response) => {
     const collection = req.params.collectionName;
@@ -26,10 +12,33 @@ const getDocumentColection = async (req, res = response) => {
 
     switch (collection) {
         case 'customer':
-            data = await Customer.find({ name: regex });
+            data = await Customer.find({
+                $or: [
+                    { firstName: regex },
+                    { lastName: regex },
+                    { document: regex }
+                ],
+                $and: [
+                    { status: true }
+                ]
+            });
             break;
-        case 'user':
-            data = await User.find({ name: regex });
+        case 'vehicle':
+            dataTemp = await Vehicle.find()
+                .populate({ path: 'brand', select: 'brandVehicle' })
+                .populate({ path: 'model', select: 'vehicleModel' })
+                .populate({ path: 'typeVehicle', select: 'typeVehicle' })
+
+            if (dataTemp && dataTemp.length) {
+                data = dataTemp.filter((val) =>
+                    (val.brand.brandVehicle.toLowerCase().includes(term.toLowerCase()) ||
+                        val.model.vehicleModel.toLowerCase().includes(term.toLowerCase()) ||
+                        val.plate.toLowerCase().includes(term.toLowerCase())) &&
+                    val.status === 'active'
+                );
+            } else {
+                data = dataTemp;
+            }
             break;
         default:
             return res.status(400).json({
@@ -45,6 +54,5 @@ const getDocumentColection = async (req, res = response) => {
 }
 
 module.exports = {
-    getSearchAll,
     getDocumentColection
 }

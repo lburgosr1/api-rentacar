@@ -13,7 +13,7 @@ const router = Router();
 
 router.post('/', 
     [
-        check('email', 'The email is require').isEmail(),
+        check('userName', 'The user name is require').not().isEmpty(),
         check('password', 'The password is require').not().isEmpty(),
         validateField
     ],

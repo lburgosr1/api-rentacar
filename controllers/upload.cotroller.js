@@ -10,7 +10,7 @@ const fileUpload = (req, res = response) => {
     const type = req.params.type;
     const id = req.params.id;
 
-    const typeValid = ['customers', 'users'];
+    const typeValid = ['vehicles', 'users'];
 
     if (!typeValid.includes(type)) {
         return res.status(400).json({
