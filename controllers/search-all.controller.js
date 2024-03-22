@@ -1,7 +1,7 @@
 const { response } = require('express');
 const Customer = require('../models/customer.model');
-const Document = require('../models/document.model');
 const Vehicle = require('../models/vehicle.model');
+const Employee = require('../models/employee.model');
 
 const getDocumentColection = async (req, res = response) => {
     const collection = req.params.collectionName;
@@ -13,6 +13,18 @@ const getDocumentColection = async (req, res = response) => {
     switch (collection) {
         case 'customer':
             data = await Customer.find({
+                $or: [
+                    { firstName: regex },
+                    { lastName: regex },
+                    { document: regex }
+                ],
+                $and: [
+                    { status: true }
+                ]
+            });
+            break;
+        case 'employee':
+            data = await Employee.find({
                 $or: [
                     { firstName: regex },
                     { lastName: regex },

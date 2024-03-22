@@ -18,6 +18,7 @@ router.post('/',
         check('lastName', 'The last name is require').not().isEmpty(),
         check('password', 'The password is require').not().isEmpty(),
         check('userName', 'The user name is require').not().isEmpty(),
+        check('', 'The user name is require').not().isEmpty(),
         validateField
     ],
     createUser

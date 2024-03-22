@@ -8,17 +8,22 @@ const { getMenuFrontEnd } = require('../helpers/menu-frontend');
 
 const login = async(req, res = response) => {
 
-    //Verify email
-    const { email, password } = req.body;
+    //Verify userName
+    const { userName, password } = req.body;
 
     try {
 
-        const userDB = await User.findOne({ email });
+        const userDB = await User.findOne({ userName });
 
         if(!userDB) {
             return res.status(404).json({
                 ok: false,
-                msg: 'The email no found'
+                msg: 'El nombre de usuario no existe'
+            });
+        } else if(!userDB.status) {
+            return res.status(404).json({
+                ok: false,
+                msg: 'El usuario no esta activo'
             });
         }
 
@@ -28,7 +33,7 @@ const login = async(req, res = response) => {
         if(!verifyPassword) {
             return res.status(400).json({
                 ok: false,
-                msg: 'The password no valid'
+                msg: 'La contraseña no es valida'
             });
         }
 

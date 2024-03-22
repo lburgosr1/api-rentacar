@@ -25,23 +25,11 @@ router.post('/',
         validateField
     ],
     createRentACar
-    );
-    
-    router.put('/:id',
-    [
-        validateJWT,
-        check('customer', 'The customer is require').not().isEmpty(),
-        check('vehicle', 'The vehicle is require').not().isEmpty(),
-        check('document', 'The document is require').not().isEmpty(),
-        check('rentalStartDate', 'The rental start date is require').not().isEmpty(),
-        check('rentalEndDate', 'The rental end date is require').not().isEmpty(),
-        check('daysOfRent', 'The days of rent is require').not().isEmpty(),
-        validateField
-    ],
-    updateRentACar
 );
 
-router.delete('/:id', 
+router.put('/:id', validateJWT, updateRentACar);
+
+router.delete('/:id',
     validateJWT,
     deleteRentACar
 );

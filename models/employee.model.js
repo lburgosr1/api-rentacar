@@ -1,6 +1,10 @@
 const { Schema, model } = require('mongoose');
 
 const EmployeeSchema = Schema({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     firstName: {
         type: String,
         required: true
@@ -23,6 +27,11 @@ const EmployeeSchema = Schema({
         required: true
     },
     phone: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    email: {
         type: String,
         required: true,
         unique: true,

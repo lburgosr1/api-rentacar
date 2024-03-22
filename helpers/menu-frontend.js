@@ -7,7 +7,7 @@ const URL = {
     reports: 'reports',
     users: 'users',
     coins: 'coins',
-    configuration: 'configuration',
+    companyDetails: 'company-details',
     documents: 'documents',
     employees: 'employees',
     brand: 'brand-vehicles',
@@ -56,7 +56,7 @@ const getMenuFrontEnd = (role = 'USER_ROLE') => {
     if (role === 'ADMIN_ROLE') {
         menu[1].submenu.unshift(
             { title: 'Usuarios', icon: 'fa fa-user', url: URL.users },
-            { title: 'Configuración', icon: 'fa fa-university', url: URL.configuration },
+            { title: 'Compañia', icon: 'fa fa-building', url: URL.companyDetails },
         );
         menu.push(
             {

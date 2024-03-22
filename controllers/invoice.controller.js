@@ -25,7 +25,7 @@ const getInvoice = async (req, res) => {
     const id = req.params.id;
 
     try {
-        const invoice = await Invoice.find({rentacar: id})
+        const invoices = await Invoice.find({rentacar: id})
         .populate({ path: 'rentacar', populate: { path: 'vehicle', populate: { path: 'typeVehicle', select: 'typeVehicle'} } })
         .populate({ path: 'rentacar', populate: { path: 'vehicle', populate: { path: 'brand', select: 'brandVehicle'} } })
         .populate({ path: 'rentacar', populate: { path: 'vehicle', populate: { path: 'model', select: 'vehicleModel'} } })
@@ -34,7 +34,7 @@ const getInvoice = async (req, res) => {
         
         res.status(200).json({
             ok: true,
-            invoice
+            invoices
         })
 
     } catch (error) {

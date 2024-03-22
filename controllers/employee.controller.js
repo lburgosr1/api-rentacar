@@ -1,6 +1,7 @@
 const { response } = require('express');
 
 const Employee = require('../models/employee.model');
+const User = require('../models/user.model');
 
 const getEmployees = async (req, res) => {
 
@@ -8,14 +9,19 @@ const getEmployees = async (req, res) => {
     const count = Number(req.query.count) || 5;
     const term = req.query.term || '';
     const regex = new RegExp(term, 'i');
+    const status = req.query.status || true;
 
     //Colleccion de promesa
     const [employees, total] = await Promise.all([
         Employee
             .find({
-                $and: [
+                $or: [
                     { firstName: regex },
                     { lastName: regex },
+                    { phone: regex }
+                ],
+                $and: [
+                    { status: status }
                 ]
             })
             .skip(count * (page - 1))
@@ -24,9 +30,13 @@ const getEmployees = async (req, res) => {
 
         Employee
             .find({
-                $and: [
+                $or: [
                     { firstName: regex },
                     { lastName: regex },
+                    { phone: regex }
+                ],
+                $and: [
+                    { status: status }
                 ]
             })
             .count()
@@ -88,25 +98,45 @@ const createEmployee = async (req, res = response) => {
 
 const updateEmployee = async (req, res = response) => {
 
-    const documentId = req.params.id;
+    const employeeId = req.params.id;
 
     try {
 
-        const documentDB = await Employee.findById(documentId);
+        const employeeDB = await Employee.findById(employeeId);
 
-        if (!documentDB) {
+        if (!employeeDB) {
             return res.status(404).json({
                 ok: false,
                 msg: 'Empleado no existe'
             });
         }
 
-        await Employee.findByIdAndUpdate(documentId, req.body);
-        const documentUpdate = await Employee.findById(documentId);
+        const userDB = await User.findOne({user: userId});
+
+        if (!userDB) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'No se encontro el usuario'
+            });
+        }
+
+        userDB.status = req.body.status;
+
+        const userUpdate = await User.findByIdAndUpdate(employeeDB.user, userDB);
+
+        if (!userUpdate) {
+            return res.status(400).json({
+                ok: false,
+                msg: 'No se pudo actualizar el usuario'
+            });
+        }
+
+        await Employee.findByIdAndUpdate(employeeId, req.body);
+        const employeeUpdate = await Employee.findById(employeeId);
 
         res.json({
             ok: true,
-            employee: documentUpdate
+            employee: employeeUpdate
         });
 
     } catch (error) {
@@ -120,12 +150,12 @@ const updateEmployee = async (req, res = response) => {
 
 const deleteEmployee = async (req, res = response) => {
 
-    const documentId = req.params.id
+    const employeeId = req.params.id
 
     try {
-        const documentDB = await Employee.findById(documentId);
+        const employeeDB = await Employee.findById(employeeId);
 
-        if (!documentDB) {
+        if (!employeeDB) {
             return res.status(404).json({
                 ok: false,
                 msg: 'Empleado no existe'
@@ -134,7 +164,7 @@ const deleteEmployee = async (req, res = response) => {
 
         const employee = req.body;
 
-        await Employee.findByIdAndUpdate(documentId, employee);
+        await Employee.findByIdAndUpdate(employeeId, employee);
         res.json({
             ok: true,
             msg: 'Estatus actualizado'

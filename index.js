@@ -40,7 +40,7 @@ app.use('/api/coin', require('./routes/coin.route'));
 app.use('/api/brand-vehicle', require('./routes/brand-vehicle.route'));
 app.use('/api/vehicle-model', require('./routes/vehicle-model.route'));
 
-app.use('/api/searchAll', require('./routes/search-all.route'));
+app.use('/api/search-all', require('./routes/search-all.route'));
 
 app.use('/api/upload', require('./routes/upload.route'));
 
